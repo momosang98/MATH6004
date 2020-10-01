@@ -1,7 +1,7 @@
 import numpy as np
 
 # Q3:Please compute the LU decomposition by hand for the following matrices.
-np.random.seed(2)
+
 
 def LU_decomposition(A):
     n = len(A[0])
