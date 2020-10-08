@@ -27,12 +27,12 @@ def get_root(x0, max_iter=50, tol=1.0e-8):
 
         # f的一阶导数不能为0，最普遍的说法是不能非正定
         p = p0 - f(p0) / f_first_order(p0)
-        c = p-p0
+        c = f(p)
 
         # 如果小于精度值则退出迭代
         if abs(c) < tol:  # tol是判断迭代更新的阈值
 
-            return u'(a):Through Newton method,after %s times iteration，we guess x = %s' % (i+1 , p)
+            return u'(a):Through Newton method,after %s times iteration，we guess x = %s,f(x) = %s' % (i+1 , p, c)
 
         p0 = p
 
@@ -62,12 +62,12 @@ def get_root(x0, y,max_iter=50, tol=1.0e-8):
 
         # f的一阶导数不能为0，最普遍的说法是不能非正定
         p = p0 - y*f(p0) / f_first_order(p0)
-        c = p-p0
+        c = f(p)
 
         # 如果小于精度值则退出迭代
         if abs(c) < tol:  # tol是判断迭代更新的阈值
 
-            return u'(b):Through Newton method,after %s times iteration，we guess x = %s' % (i+1 , p)
+            return u'(b):Through Newton method,after %s times iteration，we guess x = %s, f(x) = %s' % (i+1 , p, c)
 
         p0 = p
 
@@ -83,29 +83,20 @@ def f(x):
 def phi(f,x):
     return f+x
 
-def y(f,x):
-    return phi(f,x)
-
-def z(f,y):
-    return phi(f,y)
-
 def roll(x):
-    f1=f(x)
-    y1=y(f1,x)
-    f2=f(y1)
-    z1=z(f2,y1)
-    xx=(x*z1-y1**2)/(x+z1-2*y1)
+    y1 = phi(f(x),x)
+    y2 = phi(f(y1),y1)
+    xx = (x*y2-y1**2)/(x+y2-2*y1)
     return xx
 
-
-def main(x,e):
-    ans = []
-    ans.append(roll(x))
-    ans.append(roll(ans[0]))
-    for i in range(50):
-        if abs(ans[-1] - ans[-2]) < e:
-            return  i+1,ans[-1]
-        ans.append(roll(ans[-1]))
+def main(x0,e):
+    for i in range(500):
+        c = f(roll(x0))
+        x = roll(x0)
+        if abs(c) < e:
+            return u'(c):Through Aitken’s technique,after %s times iteration，we guess x = %s, f(x) = %s' % (i+1 , x, c)
+        x0 = x
 
 if __name__ == '__main__':
-    print('(c):Through Aitken’s technique,after %s times iteration，we guess x = %s' % (main(0.0,1e-8)))  # x0=0
+
+    print(main(0.0,1.0e-8))  # x0=0
